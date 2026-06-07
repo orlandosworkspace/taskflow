@@ -31,6 +31,7 @@ export function showAuthScreen() {
 export function showAppScreen(user) {
   setCurrentUser(user);
   document.getElementById('user-label').textContent = user.username;
+  document.getElementById('user-avatar').textContent = user.username.charAt(0);
   document.getElementById('auth-screen').hidden = true;
   document.getElementById('app-screen').hidden = false;
 }

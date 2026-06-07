@@ -3,18 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#2563eb">
+  <meta name="theme-color" content="#4f46e5">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="My Tasks">
+  <meta name="apple-mobile-web-app-title" content="Taskflow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/icons/icon.svg">
-  <title>My Tasks</title>
+  <title>Taskflow</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <section id="auth-screen" class="auth-screen">
     <div id="auth-panel" class="auth-panel" data-mode="login">
+      <div class="brand">
+        <div class="brand-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+            <path d="M9 6h11M9 12h11M9 18h6"/>
+            <path d="M5 6h.01M5 12h.01M5 18h.01" stroke-width="3"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-name">Taskflow</div>
+          <div class="brand-tagline">Stay organized, get things done</div>
+        </div>
+      </div>
+
       <h1 id="auth-title">Welcome back</h1>
       <p class="auth-subtitle">Sign in to manage your tasks</p>
 
@@ -26,6 +42,7 @@
           <input
             id="auth-username"
             type="text"
+            placeholder="yourname"
             autocomplete="username"
             required
             minlength="3"
@@ -38,6 +55,7 @@
           <input
             id="auth-password"
             type="password"
+            placeholder="••••••••"
             autocomplete="current-password"
             required
             minlength="6"
@@ -57,40 +75,63 @@
     <p id="error-banner" class="error-banner" hidden></p>
 
     <header class="app-header">
-      <h1>My Tasks</h1>
+      <div class="brand">
+        <div class="brand-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+            <path d="M9 6h11M9 12h11M9 18h6"/>
+            <path d="M5 6h.01M5 12h.01M5 18h.01" stroke-width="3"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-name">Taskflow</div>
+          <div class="brand-tagline">Your tasks</div>
+        </div>
+      </div>
       <div class="user-bar">
-        <span id="user-label" class="user-label"></span>
+        <div class="user-chip">
+          <span id="user-avatar" class="user-avatar"></span>
+          <span id="user-label" class="user-label"></span>
+        </div>
         <button id="install-btn" type="button" class="install-btn" hidden>Install</button>
         <button id="logout-btn" type="button" class="logout-btn">Log out</button>
       </div>
     </header>
 
     <form id="add-form" class="add-form">
-      <div class="add-row">
-        <input
-          id="task-input"
-          type="text"
-          placeholder="What do you need to do?"
-          autocomplete="off"
-        >
-        <select id="category-input" aria-label="Category"></select>
-        <input id="due-date-input" type="date" aria-label="Due date">
-        <button id="add-btn" type="submit" disabled>Add</button>
+      <div class="add-card">
+        <div class="add-card-label">New task</div>
+        <div class="add-row">
+          <input
+            id="task-input"
+            type="text"
+            placeholder="What do you need to do?"
+            autocomplete="off"
+          >
+          <select id="category-input" aria-label="Category"></select>
+          <input id="due-date-input" type="date" aria-label="Due date">
+          <button id="add-btn" type="submit" disabled>Add task</button>
+        </div>
       </div>
     </form>
 
-    <nav class="categories" aria-label="Filter by category">
-      <button type="button" class="category-btn active" data-category="all">All</button>
-      <button type="button" class="category-btn" data-category="work">Work</button>
-      <button type="button" class="category-btn" data-category="personal">Personal</button>
-      <button type="button" class="category-btn" data-category="shopping">Shopping</button>
-    </nav>
+    <div class="filter-section">
+      <div class="filter-label">Category</div>
+      <nav class="categories" aria-label="Filter by category">
+        <button type="button" class="category-btn active" data-category="all">All</button>
+        <button type="button" class="category-btn" data-category="work">Work</button>
+        <button type="button" class="category-btn" data-category="personal">Personal</button>
+        <button type="button" class="category-btn" data-category="shopping">Shopping</button>
+      </nav>
+    </div>
 
-    <nav class="filters" aria-label="Filter by status">
-      <button type="button" class="filter-btn active" data-filter="all">All</button>
-      <button type="button" class="filter-btn" data-filter="active">Active</button>
-      <button type="button" class="filter-btn" data-filter="done">Done</button>
-    </nav>
+    <div class="filter-section">
+      <div class="filter-label">Status</div>
+      <nav class="filters" aria-label="Filter by status">
+        <button type="button" class="filter-btn active" data-filter="all">All</button>
+        <button type="button" class="filter-btn" data-filter="active">Active</button>
+        <button type="button" class="filter-btn" data-filter="done">Completed</button>
+      </nav>
+    </div>
 
     <p id="empty-state" class="empty-state">No tasks yet. Add one above!</p>
     <ul id="task-list" class="task-list"></ul>

@@ -275,6 +275,7 @@ export function render() {
       editBtn.type = 'button';
       editBtn.className = 'edit-btn';
       editBtn.textContent = 'Edit';
+      editBtn.setAttribute('aria-label', 'Edit task');
       editBtn.addEventListener('click', () => {
         setEditingId(task.id);
         render();
@@ -283,7 +284,7 @@ export function render() {
       const deleteBtn = document.createElement('button');
       deleteBtn.type = 'button';
       deleteBtn.className = 'delete-btn';
-      deleteBtn.textContent = 'Delete';
+      deleteBtn.textContent = 'Remove';
       deleteBtn.addEventListener('click', () => {
         withLoading(() => deleteTask(task.id));
       });

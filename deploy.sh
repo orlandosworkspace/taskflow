@@ -3,7 +3,7 @@ set -e
 
 cd "$(dirname "$0")"
 
-echo "=== My Tasks — Deploy to Render ==="
+echo "=== Taskflow — Deploy to Render ==="
 echo ""
 echo "Step 1: Push this repo to GitHub"
 echo "  gh auth login"

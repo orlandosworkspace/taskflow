@@ -1,11 +1,11 @@
 {
-  "name": "My Tasks",
-  "short_name": "Tasks",
-  "description": "Personal task manager with categories and due dates",
+  "name": "Taskflow",
+  "short_name": "Taskflow",
+  "description": "Professional task manager with categories and due dates",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f5f5f5",
-  "theme_color": "#2563eb",
+  "background_color": "#0f1419",
+  "theme_color": "#4f46e5",
   "icons": [
     {
       "src": "/icons/icon.svg",
