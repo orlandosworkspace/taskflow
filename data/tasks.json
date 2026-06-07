@@ -1,0 +1,30 @@
+[
+  {
+    "id": "141e0d18cbc8",
+    "text": "Buy groceries",
+    "done": false,
+    "createdAt": "2026-06-07T17:19:33.534267+00:00",
+    "category": "personal"
+  },
+  {
+    "id": "0dde35768981",
+    "text": "Hello",
+    "done": true,
+    "createdAt": "2026-06-07T17:20:56.117990+00:00",
+    "category": "personal"
+  },
+  {
+    "id": "2786a3171356",
+    "text": "Finish report",
+    "done": false,
+    "category": "work",
+    "createdAt": "2026-06-07T17:21:01.785676+00:00"
+  },
+  {
+    "id": "f2f6fc775213",
+    "text": "Buy milk",
+    "done": false,
+    "category": "shopping",
+    "createdAt": "2026-06-07T17:21:01.797156+00:00"
+  }
+]
