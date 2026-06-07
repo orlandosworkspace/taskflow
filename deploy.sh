@@ -36,7 +36,7 @@ fi
 if ! render workspace current --output text --confirm 2>/dev/null | grep -q .; then
   WORKSPACE_ID="$(render workspaces --output json --confirm | python3 -c "
 import json, sys
-data = json.load(sys.stdin)
+data = json.load(sys.stdin) or []
 print(data[0]['id'] if data else '')
 ")"
   if [ -z "$WORKSPACE_ID" ]; then
@@ -59,15 +59,17 @@ echo ""
 echo "Repository: $REPO_URL"
 echo ""
 
-if render services list --output json --confirm 2>/dev/null | grep -q "\"name\":\"$SERVICE_NAME\""; then
-  SERVICE_ID="$(render services list --output json --confirm | python3 -c "
+SERVICE_ID="$(render services list --output json --confirm | python3 -c "
 import json, sys
-data = json.load(sys.stdin)
-for svc in data:
+data = json.load(sys.stdin) or []
+for item in data:
+    svc = item.get('service', item)
     if svc.get('name') == '$SERVICE_NAME':
         print(svc['id'])
         break
 ")"
+
+if [ -n "$SERVICE_ID" ]; then
   echo "Service '$SERVICE_NAME' already exists. Triggering deploy..."
   render deploys create "$SERVICE_ID" --wait --output text --confirm
 else
@@ -91,10 +93,12 @@ echo ""
 echo "Fetching service URL..."
 SERVICE_URL="$(render services list --output json --confirm | python3 -c "
 import json, sys
-data = json.load(sys.stdin)
-for svc in data:
+data = json.load(sys.stdin) or []
+for item in data:
+    svc = item.get('service', item)
     if svc.get('name') == '$SERVICE_NAME':
-        print(svc.get('serviceDetails', {}).get('url') or svc.get('url', ''))
+        details = svc.get('serviceDetails', {})
+        print(details.get('url') or svc.get('url', ''))
         break
 ")"
 
