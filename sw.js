@@ -1,10 +1,12 @@
-const CACHE = 'taskflow-v1';
+const CACHE = 'taskflow-v2';
 const ASSETS = [
   '/',
   '/index.html',
   '/style.css',
   '/manifest.json',
   '/icons/icon.svg',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
   '/js/app.js',
   '/js/auth.js',
   '/js/auth-ui.js',

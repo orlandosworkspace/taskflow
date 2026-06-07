@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: my-tasks
+    name: taskflow
     runtime: python
     plan: free
     buildCommand: pip install -r requirements.txt
