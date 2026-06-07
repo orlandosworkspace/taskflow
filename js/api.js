@@ -1,10 +1,15 @@
+import { getToken } from './auth.js';
+
 const API_BASE = '/api/tasks';
 
 async function request(url, options = {}) {
-  const response = await fetch(url, {
-    headers: { 'Content-Type': 'application/json' },
-    ...options,
-  });
+  const headers = { 'Content-Type': 'application/json', ...options.headers };
+  const token = getToken();
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const response = await fetch(url, { ...options, headers });
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: 'Request failed' }));
@@ -19,10 +24,10 @@ export function fetchTasks() {
   return request(API_BASE);
 }
 
-export function createTask(text, category) {
+export function createTask(text, category, dueDate) {
   return request(API_BASE, {
     method: 'POST',
-    body: JSON.stringify({ text, category }),
+    body: JSON.stringify({ text, category, dueDate: dueDate || null }),
   });
 }
 

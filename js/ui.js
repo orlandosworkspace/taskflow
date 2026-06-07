@@ -1,6 +1,7 @@
-import { tasks, filter, categoryFilter, setFilter, setCategoryFilter } from './state.js';
-import { toggleTask, deleteTask, getVisibleTasks } from './tasks.js';
+import { tasks, filter, categoryFilter, editingId, setFilter, setCategoryFilter, setEditingId } from './state.js';
+import { toggleTask, editTask, deleteTask, getVisibleTasks } from './tasks.js';
 import { CATEGORIES, getCategory } from './categories.js';
+import { formatDueDate, dueDateStatus } from './dates.js';
 
 const EMPTY_MESSAGES = {
   all: 'No tasks yet. Add one above!',
@@ -115,6 +116,102 @@ function createCategoryBadge(categoryId) {
   return badge;
 }
 
+function createCategorySelect(selectedId) {
+  const select = document.createElement('select');
+  select.className = 'edit-category';
+  select.innerHTML = CATEGORIES.map(
+    (c) => `<option value="${c.id}"${c.id === selectedId ? ' selected' : ''}>${c.label}</option>`
+  ).join('');
+  return select;
+}
+
+function createDueDateInput(value) {
+  const input = document.createElement('input');
+  input.type = 'date';
+  input.className = 'edit-due-date';
+  input.value = value || '';
+  return input;
+}
+
+function createDueDateBadge(task) {
+  if (!task.dueDate) return null;
+
+  const status = dueDateStatus(task.dueDate, task.done);
+  const badge = document.createElement('span');
+  badge.className = 'due-date-badge ' + status;
+
+  if (status === 'overdue') {
+    badge.textContent = `Overdue · ${formatDueDate(task.dueDate)}`;
+  } else if (status === 'today') {
+    badge.textContent = 'Due today';
+  } else {
+    badge.textContent = `Due ${formatDueDate(task.dueDate)}`;
+  }
+
+  return badge;
+}
+
+function createEditForm(task) {
+  const form = document.createElement('div');
+  form.className = 'edit-form';
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'edit-input';
+  input.value = task.text;
+
+  const categorySelect = createCategorySelect(task.category);
+  const dueDateInput = createDueDateInput(task.dueDate);
+
+  const actions = document.createElement('div');
+  actions.className = 'edit-actions';
+
+  const saveBtn = document.createElement('button');
+  saveBtn.type = 'button';
+  saveBtn.className = 'save-btn';
+  saveBtn.textContent = 'Save';
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.type = 'button';
+  cancelBtn.className = 'cancel-btn';
+  cancelBtn.textContent = 'Cancel';
+
+  const save = () => {
+    if (input.value.trim() === '') {
+      input.classList.add('shake');
+      input.addEventListener('animationend', () => input.classList.remove('shake'), { once: true });
+      return;
+    }
+    withLoading(async () => {
+      await editTask(task.id, input.value, categorySelect.value, dueDateInput.value);
+      setEditingId(null);
+    });
+  };
+
+  saveBtn.addEventListener('click', save);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') save();
+    if (e.key === 'Escape') {
+      setEditingId(null);
+      render();
+    }
+  });
+  cancelBtn.addEventListener('click', () => {
+    setEditingId(null);
+    render();
+  });
+
+  actions.append(saveBtn, cancelBtn);
+  form.append(input, categorySelect, dueDateInput, actions);
+
+  requestAnimationFrame(() => {
+    input.focus();
+    input.select();
+  });
+
+  return form;
+}
+
 export function render() {
   const list = document.getElementById('task-list');
   const empty = document.getElementById('empty-state');
@@ -134,11 +231,16 @@ export function render() {
 
   for (const task of visible) {
     const li = document.createElement('li');
-    li.className = 'task-item' + (task.done ? ' done' : '');
+    const overdue = dueDateStatus(task.dueDate, task.done) === 'overdue';
+    li.className = 'task-item' +
+      (task.done ? ' done' : '') +
+      (overdue ? ' overdue' : '') +
+      (editingId === task.id ? ' editing' : '');
 
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.checked = task.done;
+    checkbox.disabled = editingId === task.id;
     checkbox.addEventListener('change', () => {
       withLoading(() => toggleTask(task.id));
     });
@@ -146,21 +248,50 @@ export function render() {
     const content = document.createElement('div');
     content.className = 'task-content';
 
-    const span = document.createElement('span');
-    span.className = 'task-text';
-    span.textContent = task.text;
+    if (editingId === task.id) {
+      content.append(createEditForm(task));
+    } else {
+      const span = document.createElement('span');
+      span.className = 'task-text';
+      span.textContent = task.text;
+      span.title = 'Double-click to edit';
+      span.addEventListener('dblclick', () => {
+        setEditingId(task.id);
+        render();
+      });
+      const meta = document.createElement('div');
+      meta.className = 'task-meta';
+      meta.append(createCategoryBadge(task.category));
+      const dueBadge = createDueDateBadge(task);
+      if (dueBadge) meta.append(dueBadge);
+      content.append(meta, span);
+    }
 
-    content.append(createCategoryBadge(task.category), span);
+    const actions = document.createElement('div');
+    actions.className = 'task-actions';
 
-    const deleteBtn = document.createElement('button');
-    deleteBtn.type = 'button';
-    deleteBtn.className = 'delete-btn';
-    deleteBtn.textContent = 'Delete';
-    deleteBtn.addEventListener('click', () => {
-      withLoading(() => deleteTask(task.id));
-    });
+    if (editingId !== task.id) {
+      const editBtn = document.createElement('button');
+      editBtn.type = 'button';
+      editBtn.className = 'edit-btn';
+      editBtn.textContent = 'Edit';
+      editBtn.addEventListener('click', () => {
+        setEditingId(task.id);
+        render();
+      });
 
-    li.append(checkbox, content, deleteBtn);
+      const deleteBtn = document.createElement('button');
+      deleteBtn.type = 'button';
+      deleteBtn.className = 'delete-btn';
+      deleteBtn.textContent = 'Delete';
+      deleteBtn.addEventListener('click', () => {
+        withLoading(() => deleteTask(task.id));
+      });
+
+      actions.append(editBtn, deleteBtn);
+    }
+
+    li.append(checkbox, content, actions);
     list.appendChild(li);
   }
 

@@ -3,13 +3,67 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="My Tasks">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icons/icon.svg">
   <title>My Tasks</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main>
+  <section id="auth-screen" class="auth-screen">
+    <div id="auth-panel" class="auth-panel" data-mode="login">
+      <h1 id="auth-title">Welcome back</h1>
+      <p class="auth-subtitle">Sign in to manage your tasks</p>
+
+      <p id="auth-error" class="error-banner" hidden></p>
+
+      <form id="auth-form" class="auth-form">
+        <label>
+          Username
+          <input
+            id="auth-username"
+            type="text"
+            autocomplete="username"
+            required
+            minlength="3"
+            maxlength="20"
+            pattern="[a-zA-Z0-9_]+"
+          >
+        </label>
+        <label>
+          Password
+          <input
+            id="auth-password"
+            type="password"
+            autocomplete="current-password"
+            required
+            minlength="6"
+          >
+        </label>
+        <button id="auth-submit" type="submit">Log in</button>
+      </form>
+
+      <p class="auth-switch">
+        <span id="auth-switch-text">Don't have an account?</span>
+        <button id="auth-switch-btn" type="button" class="link-btn">Sign up</button>
+      </p>
+    </div>
+  </section>
+
+  <main id="app-screen" hidden>
     <p id="error-banner" class="error-banner" hidden></p>
-    <h1>My Tasks</h1>
+
+    <header class="app-header">
+      <h1>My Tasks</h1>
+      <div class="user-bar">
+        <span id="user-label" class="user-label"></span>
+        <button id="install-btn" type="button" class="install-btn" hidden>Install</button>
+        <button id="logout-btn" type="button" class="logout-btn">Log out</button>
+      </div>
+    </header>
 
     <form id="add-form" class="add-form">
       <div class="add-row">
@@ -20,6 +74,7 @@
           autocomplete="off"
         >
         <select id="category-input" aria-label="Category"></select>
+        <input id="due-date-input" type="date" aria-label="Due date">
         <button id="add-btn" type="submit" disabled>Add</button>
       </div>
     </form>
