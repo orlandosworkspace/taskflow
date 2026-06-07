@@ -33,6 +33,19 @@ if ! render whoami --output text --confirm >/dev/null 2>&1; then
   exit 1
 fi
 
+if ! render workspace current --output text --confirm 2>/dev/null | grep -q .; then
+  WORKSPACE_ID="$(render workspaces --output json --confirm | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+print(data[0]['id'] if data else '')
+")"
+  if [ -z "$WORKSPACE_ID" ]; then
+    echo "No Render workspace found. Run: render workspace set"
+    exit 1
+  fi
+  render workspace set "$WORKSPACE_ID" --confirm --output text
+fi
+
 if ! git remote get-url origin >/dev/null 2>&1; then
   echo "Creating GitHub repo: $REPO_NAME"
   gh repo create "$REPO_NAME" --public --source=. --remote=origin --push
@@ -61,7 +74,7 @@ else
   echo "Creating Render web service: $SERVICE_NAME"
   render services create \
     --name "$SERVICE_NAME" \
-    --type web \
+    --type web_service \
     --runtime python \
     --repo "$REPO_URL" \
     --branch main \
